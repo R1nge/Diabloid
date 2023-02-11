@@ -100,6 +100,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 7562288875997680810}
+  agent: {fileID: 3004639104557507981}
 --- !u!1 &7611084405501628420
 GameObject:
   m_ObjectHideFlags: 0
