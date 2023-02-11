@@ -23,7 +23,7 @@ namespace Character
                 return hit.point;
             }
 
-            return Vector3.zero;
+            return transform.position;
         }
 
         private void Update()
