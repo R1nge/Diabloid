@@ -11,7 +11,7 @@ namespace Character
         private static readonly int IsWalking = Animator.StringToHash("IsWalking");
         private static readonly int OnAttack = Animator.StringToHash("OnAttack");
         private static readonly int OnHurt = Animator.StringToHash("OnHurt");
-        private static readonly int OnDeath = Animator.StringToHash("OnDeath");
+        private static readonly int IsDead = Animator.StringToHash("IsDead");
         private Health _health;
 
         private void Awake()
@@ -26,14 +26,16 @@ namespace Character
             animator.SetTrigger(OnAttack);
         }
 
-        private void PlayHurtAnimation()
+        private void PlayHurtAnimation(bool isDead)
         {
+            if (isDead) return;
             animator.SetTrigger(OnHurt);
         }
 
-        private void PlayDeathAnimation()
+        private void PlayDeathAnimation(bool isDead)
         {
-            animator.SetTrigger(OnDeath);
+            if (isDead) return;
+            animator.SetBool(IsDead, true);
         }
 
         private void Update() => animator.SetBool(IsWalking, agent.velocity.magnitude > 0);

@@ -5,34 +5,16 @@ namespace Character
 {
     public class CharacterMovement : MonoBehaviour
     {
-        [SerializeField] private float rayDistance;
-        [SerializeField] private LayerMask groundLayer;
         private NavMeshAgent _agent;
-        private Camera _camera;
 
-        private void Awake()
+        private void Awake() => _agent = GetComponent<NavMeshAgent>();
+
+        public void MoveTo(Vector3 pos)
         {
-            _agent = GetComponent<NavMeshAgent>();
-            _camera = Camera.main;
+            _agent.isStopped = false;
+            _agent.SetDestination(pos);
         }
 
-        private Vector3 GetClickPosition()
-        {
-            Ray mousePosition = _camera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(mousePosition, out var hit, rayDistance, groundLayer))
-            {
-                return hit.point;
-            }
-
-            return transform.position;
-        }
-
-        private void Update()
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                _agent.SetDestination(GetClickPosition());
-            }
-        }
+        public void Stop() => _agent.isStopped = true;
     }
 }
