@@ -5,7 +5,8 @@ namespace Character
 {
     public class CharacterMovement : MonoBehaviour
     {
-        [SerializeField] private LayerMask rayLayer;
+        [SerializeField] private float rayDistance;
+        [SerializeField] private LayerMask groundLayer;
         private NavMeshAgent _agent;
         private Camera _camera;
 
@@ -18,7 +19,7 @@ namespace Character
         private Vector3 GetClickPosition()
         {
             Ray mousePosition = _camera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(mousePosition, out var hit, rayLayer))
+            if (Physics.Raycast(mousePosition, out var hit, rayDistance, groundLayer))
             {
                 return hit.point;
             }
