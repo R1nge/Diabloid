@@ -7,8 +7,8 @@ namespace Shared
     {
         [SerializeField] private int health;
         private bool _isDead;
-        public event Action<bool> OnTakenDamageEvent;
-        public event Action<bool> OnDiedEvent;
+        public event Action<int> OnTakenDamageEvent;
+        public event Action<int> OnDiedEvent;
 
         public bool IsDead() => _isDead;
 
@@ -16,10 +16,10 @@ namespace Shared
         {
             if (_isDead) return;
             health -= amount;
-            OnTakenDamageEvent?.Invoke(_isDead);
+            OnTakenDamageEvent?.Invoke(health);
             if (health <= 0)
             {
-                OnDiedEvent?.Invoke(_isDead);
+                OnDiedEvent?.Invoke(health);
                 _isDead = true;
             }
         }

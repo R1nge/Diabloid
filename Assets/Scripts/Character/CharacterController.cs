@@ -58,7 +58,7 @@ namespace Character
             return transform.position;
         }
 
-        private void Die(bool obj) => StartCoroutine(Die_c());
+        private void Die(int health) => StartCoroutine(Die_c());
 
         private IEnumerator Die_c()
         {

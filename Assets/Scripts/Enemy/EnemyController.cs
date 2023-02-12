@@ -67,7 +67,7 @@ namespace Enemy
             ChangeState(IsInAttackRange() ? EnemyState.Attack : EnemyState.Chase);
         }
 
-        private void Die(bool isDead)
+        private void Die(int health)
         {
             ChangeState(EnemyState.Dead);
             StartCoroutine(Die_c());

@@ -36,15 +36,14 @@ namespace Enemy
             }
         }
 
-        private void PlayHurtAnimation(bool isDead)
+        private void PlayHurtAnimation(int health)
         {
-            if (isDead) return;
+            if (health <= 0) return;
             animator.SetTrigger(OnHurt);
         }
 
-        private void PlayDeathAnimation(bool isDead)
+        private void PlayDeathAnimation(int health)
         {
-            if (isDead) return;
             animator.SetBool(IsDead, true);
         }
 
