@@ -39,8 +39,20 @@ namespace Character
         private void LookAtTarget(Vector3 targetPos)
         {
             targetPos.y = transform.position.y;
-            var rotationAngle = Quaternion.LookRotation(targetPos - transform.position);
-            transform.rotation = Quaternion.Lerp(transform.rotation, rotationAngle, Time.deltaTime * 25);
+            StartCoroutine(SmoothLookAt_c(targetPos, Vector3.up, .3f));
+        }
+        
+        IEnumerator SmoothLookAt_c(Vector3 worldPoint, Vector3 upAxis, float duration)
+        {
+            Quaternion startRot = transform.rotation;
+            Quaternion endRot = Quaternion.LookRotation(worldPoint - transform.position, upAxis);
+            for (float t = 0f; t < duration; t += Time.deltaTime)
+            {
+                transform.rotation = Quaternion.Slerp(startRot, endRot, t / duration);
+                yield return null;
+            }
+
+            transform.rotation = endRot;
         }
 
         private IEnumerator Attack_c()

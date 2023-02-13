@@ -7,7 +7,6 @@ namespace Enemy
     public class EnemyAttack : MonoBehaviour
     {
         [SerializeField] private int damage;
-        private bool _canAttack = true;
         private EnemyController _enemyController;
         private PlayerReference _playerReference;
 
@@ -22,30 +21,28 @@ namespace Enemy
         {
             if (newState == EnemyState.Attack)
             {
-                Attack();
+                LookAtPlayer();
             }
-        }
-
-        private void Attack()
-        {
-            if (!_canAttack) return;
-            StartCoroutine(Attack_c());
-            LookAtPlayer();
         }
 
         private void LookAtPlayer()
         {
             var playerPos = _playerReference.GetPlayerTransform().position;
             playerPos.y = transform.position.y;
-            var rotationAngle = Quaternion.LookRotation(playerPos - transform.position);
-            transform.rotation = Quaternion.Lerp(transform.rotation, rotationAngle, Time.deltaTime * 25);
+            StartCoroutine(SmoothLookAt_c(playerPos, Vector3.up, .3f));
         }
 
-        private IEnumerator Attack_c()
+        IEnumerator SmoothLookAt_c(Vector3 worldPoint, Vector3 upAxis, float duration)
         {
-            _canAttack = false;
-            yield return new WaitForSeconds(5);
-            _canAttack = true;
+            Quaternion startRot = transform.rotation;
+            Quaternion endRot = Quaternion.LookRotation(worldPoint - transform.position, upAxis);
+            for (float t = 0f; t < duration; t += Time.deltaTime)
+            {
+                transform.rotation = Quaternion.Slerp(startRot, endRot, t / duration);
+                yield return null;
+            }
+
+            transform.rotation = endRot;
         }
 
         //animation event

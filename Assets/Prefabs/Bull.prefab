@@ -824,6 +824,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackRange: 3
+  attackInterval: 2
 --- !u!114 &1141952747944343396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -849,7 +850,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 235044d0aa104766be5641ece8ece4f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
+  damage: 5
 --- !u!114 &1141952747944343394
 MonoBehaviour:
   m_ObjectHideFlags: 0

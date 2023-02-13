@@ -11,7 +11,7 @@ namespace Enemy
         private static readonly int IsWalking = Animator.StringToHash("IsWalking");
         private static readonly int OnAttack = Animator.StringToHash("OnAttack");
         private static readonly int OnHurt = Animator.StringToHash("OnHurt");
-        private static readonly int IsDead = Animator.StringToHash("IsDead");
+        private static readonly int OnDeath = Animator.StringToHash("OnDeath");
         private EnemyController _enemyController;
         private Health _health;
 
@@ -44,7 +44,7 @@ namespace Enemy
 
         private void PlayDeathAnimation(int health)
         {
-            animator.SetBool(IsDead, true);
+            animator.SetTrigger(OnDeath);
         }
 
         private void Update() => animator.SetBool(IsWalking, agent.velocity.magnitude > 0);

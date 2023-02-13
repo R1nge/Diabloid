@@ -8,8 +8,10 @@ namespace Enemy
     public class EnemyController : MonoBehaviour
     {
         [SerializeField] private float attackRange;
+        [SerializeField] private float attackInterval;
         private PlayerReference _playerReference;
         private EnemyState _currentState;
+        private bool _canAttack = true;
         private Health _health;
 
         public event Action<EnemyState> OnStateChangedEvent;
@@ -46,7 +48,7 @@ namespace Enemy
                     break;
             }
         }
-        
+
 
         private void Chase()
         {
@@ -64,7 +66,21 @@ namespace Enemy
                 }
             }
 
-            ChangeState(IsInAttackRange() ? EnemyState.Attack : EnemyState.Chase);
+            if (!_canAttack)
+            {
+                ChangeState(EnemyState.Chase);
+            }
+            else
+            {
+                StartCoroutine(Attack_c());
+            }
+        }
+
+        private IEnumerator Attack_c()
+        {
+            _canAttack = false;
+            yield return new WaitForSeconds(attackInterval);
+            _canAttack = true;
         }
 
         private void Die(int health)
