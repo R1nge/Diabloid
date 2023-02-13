@@ -32,6 +32,7 @@ namespace Enemy
             }
         }
 
+        //TODO: add patrolling
         private void Patrol()
         {
             _agent.SetDestination(waypoints[_currentWaypointIndex].position);

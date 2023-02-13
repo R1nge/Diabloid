@@ -26,6 +26,14 @@ namespace Character
 
         private void GetInput()
         {
+#if UNITY_ANDROID
+            if (Input.GetMouseButtonDown(0))
+            {
+                MoveToMouse();
+                TryAttack();
+                Stop();
+            }
+#endif
             if (Input.GetMouseButtonDown(0))
             {
                 MoveToMouse();
