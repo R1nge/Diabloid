@@ -837,6 +837,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46888836d34548dd90e2bda1eb90fb3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timeBeforeSelectionOfNextWaypoint: 8
   waypoints: []
 --- !u!114 &1141952747944343397
 MonoBehaviour:

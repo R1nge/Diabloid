@@ -26,7 +26,7 @@ namespace Enemy
         {
             if (other.transform.Equals(_playerReference.GetPlayerTransform()))
             {
-                _enemyController.ChangeState(EnemyState.Idle);
+                _enemyController.ChangeState(EnemyState.Patrol);
             }
         }
     }

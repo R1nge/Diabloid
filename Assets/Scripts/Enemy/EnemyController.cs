@@ -13,21 +13,25 @@ namespace Enemy
         private EnemyState _currentState;
         private bool _canAttack = true;
         private Health _health;
+        private EnemyMovement _enemyMovement;
 
         public event Action<EnemyState> OnStateChangedEvent;
-
-        private void Awake()
-        {
-            _playerReference = FindObjectOfType<PlayerReference>();
-            _health = GetComponent<Health>();
-            _health.OnDiedEvent += Die;
-        }
 
         public void ChangeState(EnemyState state)
         {
             _currentState = state;
             OnStateChangedEvent?.Invoke(_currentState);
         }
+
+        private void Awake()
+        {
+            _playerReference = FindObjectOfType<PlayerReference>();
+            _health = GetComponent<Health>();
+            _health.OnDiedEvent += Die;
+            _enemyMovement = GetComponent<EnemyMovement>();
+        }
+
+        private void Start() => ChangeState(EnemyState.Patrol);
 
         private bool IsInAttackRange()
         {
@@ -40,6 +44,9 @@ namespace Enemy
         {
             switch (_currentState)
             {
+                case EnemyState.Patrol:
+                    Patrol();
+                    break;
                 case EnemyState.Chase:
                     Chase();
                     break;
@@ -49,11 +56,9 @@ namespace Enemy
             }
         }
 
+        private void Patrol() => _enemyMovement.Patrol();
 
-        private void Chase()
-        {
-            ChangeState(IsInAttackRange() ? EnemyState.Attack : EnemyState.Chase);
-        }
+        private void Chase() => ChangeState(IsInAttackRange() ? EnemyState.Attack : EnemyState.Chase);
 
         private void Attack()
         {
