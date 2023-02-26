@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics;
 using Shared;
 using UnityEngine;
 
@@ -22,24 +23,32 @@ namespace Character
             _camera = Camera.main;
         }
 
-        private void Update() => GetInput();
-
-        private void GetInput()
+        private void Update()
         {
-#if UNITY_ANDROID
-            if (Input.GetMouseButtonDown(0))
-            {
-                MoveToMouse();
-                TryAttack();
-                Stop();
-            }
-#endif
+            GetInputPc();
+            GetInputMobile();
+        }
+
+        [Conditional("PLATFORM_STANDALONE")]
+        private void GetInputPc()
+        {
             if (Input.GetMouseButtonDown(0))
             {
                 MoveToMouse();
             }
             else if (Input.GetMouseButtonDown(1))
             {
+                TryAttack();
+                Stop();
+            }
+        }
+
+        [Conditional("PLATFORM_ANDROID")]
+        private void GetInputMobile()
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                MoveToMouse();
                 TryAttack();
                 Stop();
             }
