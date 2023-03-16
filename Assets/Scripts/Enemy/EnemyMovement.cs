@@ -1,6 +1,7 @@
-﻿using Shared;
+﻿using Character;
 using UnityEngine;
 using UnityEngine.AI;
+using Zenject;
 
 namespace Enemy
 {
@@ -12,14 +13,16 @@ namespace Enemy
         private float _timeBeforeSelectionOfNextWaypoint;
         private NavMeshAgent _agent;
         private EnemyController _enemyController;
-        private PlayerReference _playerReference;
+        private PlayerController _playerController;
+
+        [Inject]
+        private void Construct(PlayerController player) => _playerController = player;
 
         private void Awake()
         {
             _agent = GetComponent<NavMeshAgent>();
             _enemyController = GetComponent<EnemyController>();
             _enemyController.OnStateChangedEvent += OnStateChanged;
-            _playerReference = FindObjectOfType<PlayerReference>();
             _timeBeforeSelectionOfNextWaypoint = timeBeforeSelectionOfNextWaypoint;
         }
 
@@ -61,7 +64,7 @@ namespace Enemy
             _agent.SetDestination(waypoints[_currentWaypointIndex].position);
         }
 
-        private void Chase() => _agent.SetDestination(_playerReference.GetPlayerTransform().position);
+        private void Chase() => _agent.SetDestination(_playerController.transform.position);
 
         private void OnDestroy() => _enemyController.OnStateChangedEvent -= OnStateChanged;
     }

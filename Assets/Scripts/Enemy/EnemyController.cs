@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
+using Character;
 using Shared;
 using UnityEngine;
+using Zenject;
 
 namespace Enemy
 {
@@ -9,13 +11,16 @@ namespace Enemy
     {
         [SerializeField] private float attackRange;
         [SerializeField] private float attackInterval;
-        private PlayerReference _playerReference;
         private EnemyState _currentState;
         private bool _canAttack = true;
         private Health _health;
         private EnemyMovement _enemyMovement;
+        private PlayerController _playerController;
 
         public event Action<EnemyState> OnStateChangedEvent;
+
+        [Inject]
+        private void Construct(PlayerController player) => _playerController = player;
 
         public void ChangeState(EnemyState state)
         {
@@ -25,7 +30,6 @@ namespace Enemy
 
         private void Awake()
         {
-            _playerReference = FindObjectOfType<PlayerReference>();
             _health = GetComponent<Health>();
             _health.OnDiedEvent += Die;
             _enemyMovement = GetComponent<EnemyMovement>();
@@ -35,7 +39,7 @@ namespace Enemy
 
         private bool IsInAttackRange()
         {
-            var playerPos = _playerReference.GetPlayerTransform().position;
+            var playerPos = _playerController.transform.position;
             var distance = Vector3.Distance(playerPos, transform.position);
             return distance <= attackRange;
         }
@@ -62,7 +66,7 @@ namespace Enemy
 
         private void Attack()
         {
-            if (_playerReference.GetPlayerTransform().TryGetComponent(out Health health))
+            if (_playerController.TryGetComponent(out Health health))
             {
                 if (health.IsDead())
                 {

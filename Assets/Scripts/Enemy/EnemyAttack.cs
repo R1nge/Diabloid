@@ -1,6 +1,9 @@
 ﻿using System.Collections;
+using Character;
 using Shared;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
+using Zenject;
 
 namespace Enemy
 {
@@ -8,11 +11,13 @@ namespace Enemy
     {
         [SerializeField] private int damage;
         private EnemyController _enemyController;
-        private PlayerReference _playerReference;
+        private PlayerController _playerController;
+        
+        [Inject]
+        private void Construct(PlayerController player) => _playerController = player;
 
         private void Awake()
         {
-            _playerReference = FindObjectOfType<PlayerReference>();
             _enemyController = GetComponent<EnemyController>();
             _enemyController.OnStateChangedEvent += OnStateChanged;
         }
@@ -27,7 +32,7 @@ namespace Enemy
 
         private void LookAtPlayer()
         {
-            var playerPos = _playerReference.GetPlayerTransform().position;
+            var playerPos = _playerController.transform.position;
             playerPos.y = transform.position.y;
             StartCoroutine(SmoothLookAt_c(playerPos, Vector3.up, .3f));
         }
@@ -49,7 +54,7 @@ namespace Enemy
         private void Damage()
         {
             //TODO: check if within attack range or something
-            if (_playerReference.GetPlayerTransform().TryGetComponent(out Health health))
+            if (_playerController.TryGetComponent(out Health health))
             {
                 health.TakeDamage(damage);
             }
