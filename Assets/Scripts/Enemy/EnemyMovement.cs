@@ -12,7 +12,7 @@ namespace Enemy
         private int _currentWaypointIndex;
         private float _timeBeforeSelectionOfNextWaypoint;
         private NavMeshAgent _agent;
-        private EnemyController _enemyController;
+        private EnemyState _enemyState;
         private PlayerController _playerController;
 
         [Inject]
@@ -21,16 +21,16 @@ namespace Enemy
         private void Awake()
         {
             _agent = GetComponent<NavMeshAgent>();
-            _enemyController = GetComponent<EnemyController>();
-            _enemyController.OnStateChangedEvent += OnStateChanged;
+            _enemyState = GetComponent<EnemyState>();
+            _enemyState.OnStateChangedEvent += OnStateChanged;
             _timeBeforeSelectionOfNextWaypoint = timeBeforeSelectionOfNextWaypoint;
         }
 
-        private void OnStateChanged(EnemyState newState)
+        private void OnStateChanged(EnemyStates newStates)
         {
-            switch (newState)
+            switch (newStates)
             {
-                case EnemyState.Chase:
+                case EnemyStates.Chase:
                     Chase();
                     break;
             }
@@ -66,6 +66,6 @@ namespace Enemy
 
         private void Chase() => _agent.SetDestination(_playerController.transform.position);
 
-        private void OnDestroy() => _enemyController.OnStateChangedEvent -= OnStateChanged;
+        private void OnDestroy() => _enemyState.OnStateChangedEvent -= OnStateChanged;
     }
 }

@@ -12,21 +12,21 @@ namespace Enemy
         private static readonly int OnAttack = Animator.StringToHash("OnAttack");
         private static readonly int OnHurt = Animator.StringToHash("OnHurt");
         private static readonly int OnDeath = Animator.StringToHash("OnDeath");
-        private EnemyController _enemyController;
+        private EnemyState _enemyState;
         private Health _health;
 
         private void Awake()
         {
-            _enemyController = GetComponent<EnemyController>();
-            _enemyController.OnStateChangedEvent += PlayAttackAnimation;
+            _enemyState = GetComponent<EnemyState>();
+            _enemyState.OnStateChangedEvent += PlayAttackAnimation;
             _health = GetComponent<Health>();
             _health.OnTakenDamageEvent += PlayHurtAnimation;
             _health.OnDiedEvent += PlayDeathAnimation;
         }
 
-        private void PlayAttackAnimation(EnemyState state)
+        private void PlayAttackAnimation(EnemyStates states)
         {
-            if (state == EnemyState.Attack)
+            if (states == EnemyStates.Attack)
             {
                 animator.SetTrigger(OnAttack);
             }
@@ -51,7 +51,7 @@ namespace Enemy
 
         private void OnDestroy()
         {
-            _enemyController.OnStateChangedEvent -= PlayAttackAnimation;
+            _enemyState.OnStateChangedEvent -= PlayAttackAnimation;
             _health.OnTakenDamageEvent -= PlayHurtAnimation;
             _health.OnDiedEvent -= PlayDeathAnimation;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections;
+using System.Threading;
 using Character;
+using Cysharp.Threading.Tasks;
 using Shared;
 using UnityEngine;
 using Zenject;
@@ -11,31 +12,55 @@ namespace Enemy
     {
         [SerializeField] private float attackRange;
         [SerializeField] private float attackInterval;
-        private EnemyState _currentState;
         private bool _canAttack = true;
         private Health _health;
         private EnemyMovement _enemyMovement;
+        private EnemyState _enemyState;
         private PlayerController _playerController;
-
-        public event Action<EnemyState> OnStateChangedEvent;
+        private readonly CancellationTokenSource _attackCancellation = new();
 
         [Inject]
         private void Construct(PlayerController player) => _playerController = player;
-
-        public void ChangeState(EnemyState state)
-        {
-            _currentState = state;
-            OnStateChangedEvent?.Invoke(_currentState);
-        }
 
         private void Awake()
         {
             _health = GetComponent<Health>();
             _health.OnDiedEvent += Die;
             _enemyMovement = GetComponent<EnemyMovement>();
+            _enemyState = GetComponent<EnemyState>();
         }
 
-        private void Start() => ChangeState(EnemyState.Patrol);
+        private async void Update()
+        {
+            switch (_enemyState.GetCurrentState())
+            {
+                case EnemyStates.Patrol:
+                    Patrol();
+                    break;
+                case EnemyStates.Chase:
+                    Chase();
+                    break;
+                case EnemyStates.Attack:
+                    await Attack();
+                    break;
+            }
+        }
+
+        private void Patrol() => _enemyMovement.Patrol();
+
+        private void Chase()
+        {
+            if (IsInAttackRange())
+            {
+                _enemyState.ChangeState(EnemyStates.Attack);
+            }
+
+            else
+            {
+                _enemyState.ChangeState(EnemyStates.Chase);
+                _attackCancellation.Cancel();
+            }
+        }
 
         private bool IsInAttackRange()
         {
@@ -44,63 +69,45 @@ namespace Enemy
             return distance <= attackRange;
         }
 
-        private void Update()
-        {
-            switch (_currentState)
-            {
-                case EnemyState.Patrol:
-                    Patrol();
-                    break;
-                case EnemyState.Chase:
-                    Chase();
-                    break;
-                case EnemyState.Attack:
-                    Attack();
-                    break;
-            }
-        }
-
-        private void Patrol() => _enemyMovement.Patrol();
-
-        private void Chase() => ChangeState(IsInAttackRange() ? EnemyState.Attack : EnemyState.Chase);
-
-        private void Attack()
+        private async UniTask Attack()
         {
             if (_playerController.TryGetComponent(out Health health))
             {
                 if (health.IsDead())
                 {
-                    ChangeState(EnemyState.Idle);
+                    _enemyState.ChangeState(EnemyStates.Idle);
                     return;
                 }
             }
 
             if (!_canAttack)
             {
-                ChangeState(EnemyState.Chase);
+                _enemyState.ChangeState(EnemyStates.Chase);
             }
             else
             {
-                StartCoroutine(Attack_c());
+                await Attack_task(_attackCancellation.Token);
             }
         }
 
-        private IEnumerator Attack_c()
+        private async UniTask Attack_task(CancellationToken cancellationToken)
         {
             _canAttack = false;
-            yield return new WaitForSeconds(attackInterval);
+            await UniTask
+                .Delay(TimeSpan.FromSeconds(attackInterval), DelayType.Realtime, cancellationToken: cancellationToken)
+                .SuppressCancellationThrow();
             _canAttack = true;
         }
 
-        private void Die(int health)
+        private async void Die(int health)
         {
-            ChangeState(EnemyState.Dead);
-            StartCoroutine(Die_c());
+            _enemyState.ChangeState(EnemyStates.Dead);
+            await Die_task();
         }
 
-        private IEnumerator Die_c()
+        private async UniTask Die_task()
         {
-            yield return new WaitForSeconds(.1f);
+            await UniTask.Delay(TimeSpan.FromMilliseconds(100), DelayType.Realtime);
             foreach (var component in gameObject.GetComponents<Component>())
             {
                 if (component is Transform) continue;

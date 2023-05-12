@@ -5,15 +5,15 @@ namespace Enemy
 {
     public class EnemyCollision : MonoBehaviour
     {
-        private EnemyController _enemyController;
+        private EnemyState _enemyState;
 
-        private void Awake() => _enemyController = GetComponentInParent<EnemyController>();
+        private void Awake() => _enemyState = GetComponentInParent<EnemyState>();
 
         private void OnTriggerEnter(Collider other)
         {
             if (other.TryGetComponent(out PlayerController _))
             {
-                _enemyController.ChangeState(EnemyState.Chase);
+                _enemyState.ChangeState(EnemyStates.Chase);
             }
         }
 
@@ -21,7 +21,7 @@ namespace Enemy
         {
             if (other.TryGetComponent(out PlayerController _))
             {
-                _enemyController.ChangeState(EnemyState.Patrol);
+                _enemyState.ChangeState(EnemyStates.Patrol);
             }
         }
     }

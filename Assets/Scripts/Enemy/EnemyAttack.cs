@@ -2,7 +2,6 @@
 using Character;
 using Shared;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 using Zenject;
 
 namespace Enemy
@@ -10,7 +9,7 @@ namespace Enemy
     public class EnemyAttack : MonoBehaviour
     {
         [SerializeField] private int damage;
-        private EnemyController _enemyController;
+        private EnemyState _enemyState;
         private PlayerController _playerController;
         
         [Inject]
@@ -18,13 +17,13 @@ namespace Enemy
 
         private void Awake()
         {
-            _enemyController = GetComponent<EnemyController>();
-            _enemyController.OnStateChangedEvent += OnStateChanged;
+            _enemyState = GetComponent<EnemyState>();
+            _enemyState.OnStateChangedEvent += OnStateChanged;
         }
 
-        private void OnStateChanged(EnemyState newState)
+        private void OnStateChanged(EnemyStates newStates)
         {
-            if (newState == EnemyState.Attack)
+            if (newStates == EnemyStates.Attack)
             {
                 LookAtPlayer();
             }
@@ -60,6 +59,6 @@ namespace Enemy
             }
         }
 
-        private void OnDestroy() => _enemyController.OnStateChangedEvent -= OnStateChanged;
+        private void OnDestroy() => _enemyState.OnStateChangedEvent -= OnStateChanged;
     }
 }

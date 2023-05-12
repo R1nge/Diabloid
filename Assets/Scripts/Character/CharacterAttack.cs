@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using Cysharp.Threading.Tasks;
 using Shared;
 using UnityEngine;
 
@@ -16,7 +18,7 @@ namespace Character
 
         private void Awake() => _characterAnimator = GetComponent<CharacterAnimator>();
 
-        public void TryAttack(Ray mousePosition)
+        public async void TryAttack(Ray mousePosition)
         {
             if (!_canAttack) return;
             
@@ -30,7 +32,7 @@ namespace Character
                         LookAtTarget(health.transform.position);
                         _characterAnimator.PlayAttackAnimation();
                         health.TakeDamage(damage);
-                        StartCoroutine(Attack_c());
+                        await Attack_task();
                     }
                 }
             }
@@ -55,10 +57,10 @@ namespace Character
             transform.rotation = endRot;
         }
 
-        private IEnumerator Attack_c()
+        private async UniTask Attack_task()
         {
             _canAttack = false;
-            yield return new WaitForSeconds(attackInterval);
+            await UniTask.Delay(TimeSpan.FromSeconds(attackInterval));
             _canAttack = true;
         }
     }
